@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="Blog.css">
+</head>
+<body>
+    <header>
+        <h1>My Blog</h1>
+    </header>
+    <main>
+        <div id="posts">
+            <article class="post">
+                <h2>First Blog Post</h2>
+                <p>This is the content of the first blog post. It's a great post with lots of interesting information.</p>
+                <button class="edit-button">Edit</button>
+                <button class="delete-button">Delete</button>
+            </article>
+            <article class="post">
+                <h2>Second Blog Post</h2>
+                <p>This is the content of the second blog post. It's another great post with even more interesting information.</p>
+                <button class="edit-button">Edit</button>
+                <button class="delete-button">Delete</button>
+            </article>
+        </div>
+        <form id="post-form">
+            <h2>Add a New Post</h2>
+            <input type="text" id="post-title" placeholder="Post Title" required>
+            <textarea id="post-content" placeholder="Post Content" required></textarea>
+            <button type="submit">Add Post</button>
+        </form>
+    </main>
+    <script src="Blog.js"></script>
+</body>
+</html>
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.post {
+    background: white;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h2 {
+    margin-top: 0;
+}
+
+form {
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input, textarea {
+    width: calc(100% - 24px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.delete-button {
+    background-color: red;
+}
+
+.delete-button:hover {
+    background-color: darkred;
+}
+
+.edit-button {
+    background-color: blue;
+}
+
+.edit-button:hover {
+    background-color: darkblue;
+}
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const postForm = document.getElementById('post-form');
+    const postTitle = document.getElementById('post-title');
+    const postContent = document.getElementById('post-content');
+    const posts = document.getElementById('posts');
+    let isEditing = false;
+    let editingPost = null;
+
+    // Function to add a new post
+    const addPost = (title, content) => {
+        const post = document.createElement('article');
+        post.classList.add('post');
+
+        const postTitleElement = document.createElement('h2');
+        postTitleElement.innerText = title;
+
+        const postContentElement = document.createElement('p');
+        postContentElement.innerText = content;
+
+        const editButton = document.createElement('button');
+        editButton.innerText = 'Edit';
+        editButton.classList.add('edit-button');
+        editButton.addEventListener('click', () => {
+            isEditing = true;
+            editingPost = post;
+            postTitle.value = title;
+            postContent.value = content;
+        });
+
+        const deleteButton = document.createElement('button');
+        deleteButton.innerText = 'Delete';
+        deleteButton.classList.add('delete-button');
+        deleteButton.addEventListener('click', () => {
+            posts.removeChild(post);
+        });
+
+        post.appendChild(postTitleElement);
+        post.appendChild(postContentElement);
+        post.appendChild(editButton);
+        post.appendChild(deleteButton);
+        posts.appendChild(post);
+    };
+
+    // Event listener for form submission
+    postForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const title = postTitle.value.trim();
+        const content = postContent.value.trim();
+
+        if (title && content) {
+            if (isEditing) {
+                editingPost.querySelector('h2').innerText = title;
+                editingPost.querySelector('p').innerText = content;
+                isEditing = false;
+                editingPost = null;
+            } else {
+                addPost(title, content);
+            }
+            postTitle.value = '';
+            postContent.value = '';
+        }
+    });
+
+    // Add delete and edit functionality to initial posts
+    document.querySelectorAll('.post').forEach(post => {
+        const editButton = post.querySelector('.edit-button');
+        const deleteButton = post.querySelector('.delete-button');
+
+        editButton.addEventListener('click', () => {
+            isEditing = true;
+            editingPost = post;
+            postTitle.value = post.querySelector('h2').innerText;
+            postContent.value = post.querySelector('p').innerText;
+        });
+
+        deleteButton.addEventListener('click', () => {
+            posts.removeChild(post);
+        });
+    });
+});
